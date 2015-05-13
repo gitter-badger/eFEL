@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python API &mdash; eFEL 2.3.10 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.3.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="eFEL 2.3.10 documentation" href="index.html" />
+    <link rel="prev" title="eFeature descriptions" href="eFeatures.html" /> 
+  </head>
+  <body role="document">
+      <div class="header"><img class="rightlogo" src="_static/bbp.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>eFEL 2.3.10 documentation</span></a></h1>
+        <h2 class="heading"><span>Python API</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="eFeatures.html">eFeature descriptions</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="module-efel.api">
+<span id="python-api"></span><h1>Python API<a class="headerlink" href="#module-efel.api" title="Permalink to this headline">¶</a></h1>
+<p>eFEL Python API functions.</p>
+<p>This module provides the user-facing Python API of the eFEL.
+The convenience functions defined here call the underlying &#8216;cppcore&#8217; library
+to hide the lower level API from the user.
+All functions in this module can be called as efel.functionname, it is
+not necessary to include &#8216;api&#8217; as in efel.api.functionname.</p>
+<dl class="function">
+<dt id="efel.api.getDependencyFileLocation">
+<code class="descclassname">efel.api.</code><code class="descname">getDependencyFileLocation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/efel/api.html#getDependencyFileLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#efel.api.getDependencyFileLocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the location of the Dependency file</p>
+<p>The eFEL uses &#8216;Dependency&#8217; files to let the user define which versions
+of certain features are used to calculate.
+The installation directory of the eFEL contains a default
+&#8216;DependencyV5.txt&#8217; file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>location</strong> &#8211;
+path to the location of a Dependency file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="efel.api.getFeatureNames">
+<code class="descclassname">efel.api.</code><code class="descname">getFeatureNames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/efel/api.html#getFeatureNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#efel.api.getFeatureNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list with the name of all the available features</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>feature_names</strong> &#8211;
+A list that contains all the feature names available in
+the eFEL. These names can be used in the featureNames
+argument of e.g. getFeatureValues()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="efel.api.getFeatureValues">
+<code class="descclassname">efel.api.</code><code class="descname">getFeatureValues</code><span class="sig-paren">(</span><em>traces</em>, <em>featureNames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/efel/api.html#getFeatureValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#efel.api.getFeatureValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate feature values for a list of traces.</p>
+<p>This function is the core of the eFEL API. A list of traces (in the form
+of dictionaries) is passed as argument, together with a list of feature
+names.</p>
+<p>The return value consists of a list of dictionaries, one for each input
+trace. The keys in the dictionaries are the names of the calculated
+features, the corresponding values are lists with the feature values.
+Beware that every feature returns an array of values. E.g. AP_amplitude
+will return a list with the amplitude of every action potential.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>traces</strong> (<em>list of trace dicts</em>) &#8211; Every trace dict represent one trace. The dict should have the
+following keys: &#8216;T&#8217;, &#8216;V&#8217;, &#8216;stim_start&#8217;, &#8216;stim_end&#8217;</li>
+<li><strong>feature_names</strong> (<em>list of string</em>) &#8211; List with the names of the features to be calculated on all
+the traces.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>feature_values</strong> &#8211;
+For every input trace a feature value dict is return (in
+the same order). The dict contains the keys of
+&#8216;feature_names&#8217;, every key contains a numpy array with
+the feature values returned by the C++ efel code.
+The value is None if an error occured during the
+calculation of the feature.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of dicts</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="efel.api.getMeanFeatureValues">
+<code class="descclassname">efel.api.</code><code class="descname">getMeanFeatureValues</code><span class="sig-paren">(</span><em>traces</em>, <em>featureNames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/efel/api.html#getMeanFeatureValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#efel.api.getMeanFeatureValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function that returns the mean values from getFeatureValues().</p>
+<p>Instead of return a list of values for every feature as getFeatureValues()
+does, this function returns per trace one value for every feature, namely
+the mean value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>traces</strong> (<em>list of trace dicts</em>) &#8211; Every trace dict represent one trace. The dict should have the
+following keys: &#8216;T&#8217;, &#8216;V&#8217;, &#8216;stim_start&#8217;, &#8216;stim_end&#8217;</li>
+<li><strong>feature_names</strong> (<em>list of string</em>) &#8211; List with the names of the features to be calculated on all
+the traces.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>feature_values</strong> &#8211;
+For every input trace a feature value dict is return (in
+the same order). The dict contains the keys of
+&#8216;feature_names&#8217;, every key contains the mean of the array
+that is returned by getFeatureValues()
+The value is None if an error occured during the
+calculation of the feature, or if the feature value array
+was empty.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of dicts</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="efel.api.setDependencyFileLocation">
+<code class="descclassname">efel.api.</code><code class="descname">setDependencyFileLocation</code><span class="sig-paren">(</span><em>location</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/efel/api.html#setDependencyFileLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#efel.api.setDependencyFileLocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the location of the Dependency file</p>
+<p>The eFEL uses &#8216;Dependency&#8217; files to let the user define which versions
+of certain features are used to calculate.
+The installation directory of the eFEL contains a default
+&#8216;DependencyV5.txt&#8217; file. Unless the user wants to change this file,
+it is not necessary to call this function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>location</strong> (<em>string</em>) &#8211; path to the location of a Dependency file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="efel.api.setDerivativeThreshold">
+<code class="descclassname">efel.api.</code><code class="descname">setDerivativeThreshold</code><span class="sig-paren">(</span><em>newDerivativeThreshold</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/efel/api.html#setDerivativeThreshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#efel.api.setDerivativeThreshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the threshold for the derivate for detecting the spike onset</p>
+<p>Some feature us a threshold on dV/dt to calculate the beginning of an
+action potential. This function allows you to set this threshold.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>derivative_threshold</strong> (<em>float</em>) &#8211; The new derivative threshold value (in the same units
+as the traces, e.g. mV/ms).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="efel.api.setThreshold">
+<code class="descclassname">efel.api.</code><code class="descname">setThreshold</code><span class="sig-paren">(</span><em>newThreshold</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/efel/api.html#setThreshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#efel.api.setThreshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the spike detection threshold in the eFEL</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>threshold</strong> (<em>float</em>) &#8211; The new spike detection threshold value (in the same units
+as the traces, e.g. mV).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="eFeatures.html">eFeature descriptions</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, BBP, EPFL.
+      Last updated on May 13, 2015.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

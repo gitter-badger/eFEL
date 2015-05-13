@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quick start &mdash; eFEL 2.3.10 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.3.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="eFEL 2.3.10 documentation" href="index.html" />
+    <link rel="up" title="Python" href="python_examples.html" />
+    <link rel="next" title="DEAP optimisation" href="deap_optimisation.html" />
+    <link rel="prev" title="Python" href="python_examples.html" /> 
+  </head>
+  <body role="document">
+      <div class="header"><img class="rightlogo" src="_static/bbp.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>eFEL 2.3.10 documentation</span></a></h1>
+        <h2 class="heading"><span>Quick start</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="python_examples.html">Python</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="deap_optimisation.html">DEAP optimisation</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="quick-start">
+<h1>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<p>First you need to import the module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">efel</span>
+</pre></div>
+</div>
+<p>To get a list with all the available eFeature names:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">efel</span><span class="o">.</span><span class="n">getFeatureNames</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The python function to extract eFeatures is getFeatureValues(...).
+Below is a short example on how to use this function.</p>
+<p>The code and example trace are available
+<a class="reference external" href="https://github.com/BlueBrain/eFEL/blob/master/examples/basic/basic_example1.py">here</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot;Basic example 1 for eFEL&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">efel</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Main&quot;&quot;&quot;</span>
+
+    <span class="c"># Use numpy to read the trace data from the txt file</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;example_trace1.txt&#39;</span><span class="p">)</span>
+
+    <span class="c"># Time is the first column</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="c"># Voltage is the second column</span>
+    <span class="n">voltage</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="c"># Now we will construct the datastructure that will be passed to eFEL</span>
+
+    <span class="c"># A &#39;trace&#39; is a dictionary</span>
+    <span class="n">trace1</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c"># Set the &#39;T&#39; (=time) key of the trace</span>
+    <span class="n">trace1</span><span class="p">[</span><span class="s">&#39;T&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+
+    <span class="c"># Set the &#39;V&#39; (=voltage) key of the trace</span>
+    <span class="n">trace1</span><span class="p">[</span><span class="s">&#39;V&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">voltage</span>
+
+    <span class="c"># Set the &#39;stim_start&#39; (time at which a stimulus starts, in ms)</span>
+    <span class="c"># key of the trace</span>
+    <span class="c"># Warning: this need to be a list (with one element)</span>
+    <span class="n">trace1</span><span class="p">[</span><span class="s">&#39;stim_start&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">700</span><span class="p">]</span>
+
+    <span class="c"># Set the &#39;stim_end&#39; (time at which a stimulus end) key of the trace</span>
+    <span class="c"># Warning: this need to be a list (with one element)</span>
+    <span class="n">trace1</span><span class="p">[</span><span class="s">&#39;stim_end&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2700</span><span class="p">]</span>
+
+    <span class="c"># Multiple traces can be passed to the eFEL at the same time, so the</span>
+    <span class="c"># argument should be a list</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">trace1</span><span class="p">]</span>
+
+    <span class="c"># Now we pass &#39;traces&#39; to the efel and ask it to calculate the feature</span>
+    <span class="c"># values</span>
+    <span class="n">traces_results</span> <span class="o">=</span> <span class="n">efel</span><span class="o">.</span><span class="n">getFeatureValues</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span>
+                                           <span class="p">[</span><span class="s">&#39;AP_amplitude&#39;</span><span class="p">,</span> <span class="s">&#39;voltage_base&#39;</span><span class="p">])</span>
+
+    <span class="c"># The return value is a list of trace_results, every trace_results</span>
+    <span class="c"># corresponds to one trace in the &#39;traces&#39; list above (in same order)</span>
+    <span class="k">for</span> <span class="n">trace_results</span> <span class="ow">in</span> <span class="n">traces_results</span><span class="p">:</span>
+        <span class="c"># trace_result is a dictionary, with as keys the requested eFeatures</span>
+        <span class="k">for</span> <span class="n">feature_name</span><span class="p">,</span> <span class="n">feature_values</span> <span class="ow">in</span> <span class="n">trace_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">print</span> <span class="s">&quot;Feature </span><span class="si">%s</span><span class="s"> has the following values: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> \
+                <span class="p">(</span><span class="n">feature_name</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">feature_values</span><span class="p">]))</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The output of this example is:</p>
+<div class="highlight-python"><div class="highlight"><pre>Feature AP_amplitude has the following values: 72.5782441262, 46.3672552618, 41.1546679158, 39.7631750953, 36.1614653031, 37.8489295737
+Feature voltage_base has the following values: -75.446665721
+</pre></div>
+</div>
+<p>This means that the eFEL found 5 action potentials in the voltage trace. The
+amplitudes of these APs are the result of the &#8216;AP_amplitude&#8217; feature.</p>
+<p>The voltage before the start of the stimulis is measured by &#8216;voltage_base&#8217;.</p>
+<p>Results are in mV.</p>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="python_examples.html">Python</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="deap_optimisation.html">DEAP optimisation</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, BBP, EPFL.
+      Last updated on May 13, 2015.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

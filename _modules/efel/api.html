@@ -1,0 +1,324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>efel.api &mdash; eFEL 2.3.10 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.3.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="eFEL 2.3.10 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+      <div class="header"><img class="rightlogo" src="../../_static/bbp.png" alt="Logo"/><h1 class="heading"><a href="../../index.html">
+          <span>eFEL 2.3.10 documentation</span></a></h1>
+        <h2 class="heading"><span>efel.api</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for efel.api</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;eFEL Python API functions.</span>
+
+<span class="sd">This module provides the user-facing Python API of the eFEL. </span>
+<span class="sd">The convenience functions defined here call the underlying &#39;cppcore&#39; library</span>
+<span class="sd">to hide the lower level API from the user.</span>
+<span class="sd">All functions in this module can be called as efel.functionname, it is </span>
+<span class="sd">not necessary to include &#39;api&#39; as in efel.api.functionname.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Copyright (c) 2015, EPFL/Blue Brain Project</span>
+
+<span class="sd"> This file is part of eFEL &lt;https://github.com/BlueBrain/eFEL&gt;</span>
+
+<span class="sd"> This library is free software; you can redistribute it and/or modify it under</span>
+<span class="sd"> the terms of the GNU Lesser General Public License version 3.0 as published</span>
+<span class="sd"> by the Free Software Foundation.</span>
+
+<span class="sd"> This library is distributed in the hope that it will be useful, but WITHOUT</span>
+<span class="sd"> ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS</span>
+<span class="sd"> FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more</span>
+<span class="sd"> details.</span>
+
+<span class="sd"> You should have received a copy of the GNU Lesser General Public License</span>
+<span class="sd"> along with this library; if not, write to the Free Software Foundation, Inc.,</span>
+<span class="sd"> 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># pylint: disable=W0602,W0603,W0702, F0401, W0612, R0912</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">efel</span>
+<span class="kn">import</span> <span class="nn">efel.cppcore</span> <span class="kn">as</span> <span class="nn">cppcore</span>
+
+<span class="n">_settings</span> <span class="o">=</span> <span class="n">efel</span><span class="o">.</span><span class="n">Settings</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="setDependencyFileLocation"><a class="viewcode-back" href="../../api.html#efel.api.setDependencyFileLocation">[docs]</a><span class="k">def</span> <span class="nf">setDependencyFileLocation</span><span class="p">(</span><span class="n">location</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the location of the Dependency file</span>
+<span class="sd">    </span>
+<span class="sd">    The eFEL uses &#39;Dependency&#39; files to let the user define which versions</span>
+<span class="sd">    of certain features are used to calculate.</span>
+<span class="sd">    The installation directory of the eFEL contains a default </span>
+<span class="sd">    &#39;DependencyV5.txt&#39; file. Unless the user wants to change this file, </span>
+<span class="sd">    it is not necessary to call this function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    location : string</span>
+<span class="sd">               path to the location of a Dependency file    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">global</span> <span class="n">dependencyFileLocation</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">location</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s">&quot;Path to dependency file {</span><span class="si">%s</span><span class="s">} doesn&#39;t exist&quot;</span> <span class="o">%</span>
+            <span class="n">location</span><span class="p">)</span>
+    <span class="n">_settings</span><span class="o">.</span><span class="n">dependencyfile_path</span> <span class="o">=</span> <span class="n">location</span>
+
+</div>
+<div class="viewcode-block" id="getDependencyFileLocation"><a class="viewcode-back" href="../../api.html#efel.api.getDependencyFileLocation">[docs]</a><span class="k">def</span> <span class="nf">getDependencyFileLocation</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get the location of the Dependency file</span>
+<span class="sd">    </span>
+<span class="sd">    The eFEL uses &#39;Dependency&#39; files to let the user define which versions</span>
+<span class="sd">    of certain features are used to calculate.</span>
+<span class="sd">    The installation directory of the eFEL contains a default </span>
+<span class="sd">    &#39;DependencyV5.txt&#39; file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    =======</span>
+<span class="sd">    location : string</span>
+<span class="sd">               path to the location of a Dependency file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_settings</span><span class="o">.</span><span class="n">dependencyfile_path</span>
+
+</div>
+<div class="viewcode-block" id="setThreshold"><a class="viewcode-back" href="../../api.html#efel.api.setThreshold">[docs]</a><span class="k">def</span> <span class="nf">setThreshold</span><span class="p">(</span><span class="n">newThreshold</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the spike detection threshold in the eFEL</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    threshold : float</span>
+<span class="sd">                The new spike detection threshold value (in the same units</span>
+<span class="sd">                as the traces, e.g. mV).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_settings</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">newThreshold</span>
+
+</div>
+<div class="viewcode-block" id="setDerivativeThreshold"><a class="viewcode-back" href="../../api.html#efel.api.setDerivativeThreshold">[docs]</a><span class="k">def</span> <span class="nf">setDerivativeThreshold</span><span class="p">(</span><span class="n">newDerivativeThreshold</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the threshold for the derivate for detecting the spike onset</span>
+<span class="sd">    </span>
+<span class="sd">    Some feature us a threshold on dV/dt to calculate the beginning of an</span>
+<span class="sd">    action potential. This function allows you to set this threshold.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    derivative_threshold : float</span>
+<span class="sd">                The new derivative threshold value (in the same units</span>
+<span class="sd">                as the traces, e.g. mV/ms).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_settings</span><span class="o">.</span><span class="n">derivate_threshold</span> <span class="o">=</span> <span class="n">newDerivativeThreshold</span>
+
+</div>
+<div class="viewcode-block" id="getFeatureNames"><a class="viewcode-back" href="../../api.html#efel.api.getFeatureNames">[docs]</a><span class="k">def</span> <span class="nf">getFeatureNames</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Return a list with the name of all the available features</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    =======</span>
+<span class="sd">    feature_names : list of strings</span>
+<span class="sd">                    A list that contains all the feature names available in</span>
+<span class="sd">                    the eFEL. These names can be used in the featureNames</span>
+<span class="sd">                    argument of e.g. getFeatureValues()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cppcore</span><span class="o">.</span><span class="n">Initialize</span><span class="p">(</span><span class="n">_settings</span><span class="o">.</span><span class="n">dependencyfile_path</span><span class="p">,</span> <span class="s">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">feature_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">cppcore</span><span class="o">.</span><span class="n">getFeatureNames</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">feature_names</span>
+
+</div>
+<div class="viewcode-block" id="getFeatureValues"><a class="viewcode-back" href="../../api.html#efel.api.getFeatureValues">[docs]</a><span class="k">def</span> <span class="nf">getFeatureValues</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span> <span class="n">featureNames</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate feature values for a list of traces.</span>
+
+<span class="sd">    This function is the core of the eFEL API. A list of traces (in the form</span>
+<span class="sd">    of dictionaries) is passed as argument, together with a list of feature</span>
+<span class="sd">    names. </span>
+
+<span class="sd">    The return value consists of a list of dictionaries, one for each input</span>
+<span class="sd">    trace. The keys in the dictionaries are the names of the calculated </span>
+<span class="sd">    features, the corresponding values are lists with the feature values.</span>
+<span class="sd">    Beware that every feature returns an array of values. E.g. AP_amplitude</span>
+<span class="sd">    will return a list with the amplitude of every action potential.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    traces : list of trace dicts</span>
+<span class="sd">             Every trace dict represent one trace. The dict should have the</span>
+<span class="sd">             following keys: &#39;T&#39;, &#39;V&#39;, &#39;stim_start&#39;, &#39;stim_end&#39;</span>
+<span class="sd">    feature_names : list of string</span>
+<span class="sd">                  List with the names of the features to be calculated on all</span>
+<span class="sd">                  the traces.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    =======</span>
+<span class="sd">    feature_values : list of dicts</span>
+<span class="sd">                     For every input trace a feature value dict is return (in</span>
+<span class="sd">                     the same order). The dict contains the keys of</span>
+<span class="sd">                     &#39;feature_names&#39;, every key contains a numpy array with</span>
+<span class="sd">                     the feature values returned by the C++ efel code.</span>
+<span class="sd">                     The value is None if an error occured during the </span>
+<span class="sd">                     calculation of the feature.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">featureDicts</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
+        <span class="n">featureDict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="s">&#39;stim_start&#39;</span> <span class="ow">in</span> <span class="n">trace</span> <span class="ow">and</span> <span class="s">&#39;stim_end&#39;</span> <span class="ow">in</span> <span class="n">trace</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trace</span><span class="p">[</span><span class="s">&#39;stim_start&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">trace</span><span class="p">[</span><span class="s">&#39;stim_end&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">trace</span><span class="p">[</span><span class="s">&#39;stim_end&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">trace</span><span class="p">[</span><span class="s">&#39;stim_start&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="s">&#39;stim_end needs to be larger than &#39;</span>
+                        <span class="s">&#39;stim_start:</span><span class="se">\n</span><span class="s">stim_start=</span><span class="si">%f</span><span class="s"> stim_end=</span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span>
+                        <span class="p">(</span><span class="n">trace</span><span class="p">[</span><span class="s">&#39;stim_start&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">trace</span><span class="p">[</span><span class="s">&#39;stim_end&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;stim_start and stim_end in the trace &#39;</span>
+                                <span class="s">&#39;dictionary need to be lists of 1 element&#39;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;stim_start or stim_end missing from trace&#39;</span><span class="p">)</span>
+
+        <span class="n">cppcore</span><span class="o">.</span><span class="n">Initialize</span><span class="p">(</span><span class="n">_settings</span><span class="o">.</span><span class="n">dependencyfile_path</span><span class="p">,</span> <span class="s">&quot;log&quot;</span><span class="p">)</span>
+
+        <span class="c"># First set some settings that are used by the feature extraction</span>
+        <span class="n">cppcore</span><span class="o">.</span><span class="n">setFeatureDouble</span><span class="p">(</span><span class="s">&#39;spike_skipf&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">])</span>
+        <span class="n">cppcore</span><span class="o">.</span><span class="n">setFeatureInt</span><span class="p">(</span><span class="s">&#39;max_spike_skip&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">cppcore</span><span class="o">.</span><span class="n">setFeatureDouble</span><span class="p">(</span><span class="s">&#39;Threshold&#39;</span><span class="p">,</span>
+                                 <span class="p">[</span><span class="n">_settings</span><span class="o">.</span><span class="n">threshold</span><span class="p">])</span>
+        <span class="n">cppcore</span><span class="o">.</span><span class="n">setFeatureDouble</span><span class="p">(</span><span class="s">&#39;DerivativeThreshold&#39;</span><span class="p">,</span>
+                                 <span class="p">[</span><span class="n">_settings</span><span class="o">.</span><span class="n">derivative_threshold</span><span class="p">])</span>
+        <span class="n">cppcore</span><span class="o">.</span><span class="n">setFeatureDouble</span><span class="p">(</span><span class="s">&#39;interp_step&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">])</span>
+        <span class="n">cppcore</span><span class="o">.</span><span class="n">setFeatureDouble</span><span class="p">(</span><span class="s">&#39;burst_factor&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">])</span>
+        <span class="n">cppcore</span><span class="o">.</span><span class="n">setFeatureDouble</span><span class="p">(</span><span class="s">&quot;initial_perc&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">])</span>
+
+        <span class="c"># Next set time, voltage and the stimulus start and end</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">cppcore</span><span class="o">.</span><span class="n">setFeatureDouble</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">trace</span><span class="p">[</span><span class="n">item</span><span class="p">]])</span>
+
+        <span class="k">for</span> <span class="n">featureName</span> <span class="ow">in</span> <span class="n">featureNames</span><span class="p">:</span>
+            <span class="n">featureType</span> <span class="o">=</span> <span class="n">cppcore</span><span class="o">.</span><span class="n">featuretype</span><span class="p">(</span><span class="n">featureName</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">featureType</span> <span class="o">==</span> <span class="s">&quot;double&quot;</span><span class="p">:</span>
+                <span class="n">cppcoreFeatureValues</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">exitCode</span> <span class="o">=</span> <span class="n">cppcore</span><span class="o">.</span><span class="n">getFeatureDouble</span><span class="p">(</span>
+                        <span class="n">featureName</span><span class="p">,</span>
+                        <span class="n">cppcoreFeatureValues</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">exitCode</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">featureType</span> <span class="o">==</span> <span class="s">&quot;int&quot;</span><span class="p">:</span>
+                <span class="n">cppcoreFeatureValues</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                <span class="n">exitCode</span> <span class="o">=</span> <span class="n">cppcore</span><span class="o">.</span><span class="n">getFeatureInt</span><span class="p">(</span>
+                    <span class="n">featureName</span><span class="p">,</span>
+                    <span class="n">cppcoreFeatureValues</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Feature </span><span class="si">%s</span><span class="s"> has an unknown type: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> \
+                    <span class="p">(</span><span class="n">featureName</span><span class="p">,</span> <span class="n">featureType</span><span class="p">)</span>
+                <span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">exitCode</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s">&quot;Error while calculating feature </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="n">featureName</span><span class="p">,</span> <span class="n">cppcore</span><span class="o">.</span><span class="n">getgError</span><span class="p">()),</span>
+                    <span class="ne">RuntimeWarning</span><span class="p">)</span>
+                <span class="n">featureDict</span><span class="p">[</span><span class="n">featureName</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">featureDict</span><span class="p">[</span><span class="n">featureName</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cppcoreFeatureValues</span><span class="p">)</span>
+
+        <span class="n">featureDicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">featureDict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">featureDicts</span>
+
+</div>
+<div class="viewcode-block" id="getMeanFeatureValues"><a class="viewcode-back" href="../../api.html#efel.api.getMeanFeatureValues">[docs]</a><span class="k">def</span> <span class="nf">getMeanFeatureValues</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span> <span class="n">featureNames</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convenience function that returns the mean values from getFeatureValues().</span>
+
+<span class="sd">    Instead of return a list of values for every feature as getFeatureValues()</span>
+<span class="sd">    does, this function returns per trace one value for every feature, namely </span>
+<span class="sd">    the mean value.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    traces : list of trace dicts</span>
+<span class="sd">             Every trace dict represent one trace. The dict should have the</span>
+<span class="sd">             following keys: &#39;T&#39;, &#39;V&#39;, &#39;stim_start&#39;, &#39;stim_end&#39;</span>
+<span class="sd">    feature_names : list of string</span>
+<span class="sd">                    List with the names of the features to be calculated on all</span>
+<span class="sd">                    the traces.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    =======</span>
+<span class="sd">    feature_values : list of dicts</span>
+<span class="sd">                     For every input trace a feature value dict is return (in</span>
+<span class="sd">                     the same order). The dict contains the keys of</span>
+<span class="sd">                     &#39;feature_names&#39;, every key contains the mean of the array</span>
+<span class="sd">                     that is returned by getFeatureValues()</span>
+<span class="sd">                     The value is None if an error occured during the </span>
+<span class="sd">                     calculation of the feature, or if the feature value array</span>
+<span class="sd">                     was empty.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">featureDicts</span> <span class="o">=</span> <span class="n">getFeatureValues</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span> <span class="n">featureNames</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">featureDict</span> <span class="ow">in</span> <span class="n">featureDicts</span><span class="p">:</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span> <span class="ow">in</span> <span class="n">featureDict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">featureDict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">featureDict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">featureDicts</span></div>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, BBP, EPFL.
+      Last updated on May 13, 2015.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>
